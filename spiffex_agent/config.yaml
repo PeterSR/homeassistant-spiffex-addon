@@ -1,0 +1,28 @@
+name: spiffex agent
+version: "0.1.0"
+slug: spiffex_agent
+description: A SPIFFE identity for Home Assistant, from a spiffex issuer
+url: https://github.com/PeterSR/homeassistant-spiffex-addon
+arch:
+  - aarch64
+  - amd64
+image: ghcr.io/petersr/homeassistant-spiffex-agent
+init: false
+# Start before Home Assistant Core, so the Workload API is there when Core sets up.
+startup: services
+boot: auto
+map:
+  - type: homeassistant_config
+    read_only: false
+# The private key stays on this machine: a restored backup gets a new key, which you admit again.
+backup_exclude:
+  - "*/key.pem"
+options:
+  issuer: ""
+  trust_domain: ""
+  client_id: ""
+schema:
+  issuer: str
+  trust_domain: str
+  client_id: str
+  ca_file: str?

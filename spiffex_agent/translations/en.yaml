@@ -1,0 +1,13 @@
+configuration:
+  issuer:
+    name: Issuer URL
+    description: The spiffex issuer to sign in to, such as https://spiffe.example.org
+  trust_domain:
+    name: Trust domain
+    description: The trust domain the issuer must announce, such as example.org. The agent refuses an issuer that announces another one.
+  client_id:
+    name: Client ID
+    description: This machine's client ID at the issuer, <origin>/<member>, such as home-assistant/core
+  ca_file:
+    name: CA file
+    description: Optional. A PEM file of CA certificates to trust for the issuer instead of the system roots, as a path inside the app, such as /homeassistant/spiffex-ca.pem

@@ -1,0 +1,58 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+# Run the spiffex agent: it signs in to the issuer with this machine's key and serves the SPIFFE
+# Workload API where Home Assistant Core finds it.
+set -euo pipefail
+
+readonly OPTIONS=/data/options.json
+readonly KEY=/data/key.pem
+# Home Assistant's configuration folder is /homeassistant here and /config in Core, so Core sees
+# this socket as unix:///config/.spiffe/agent.sock.
+readonly SOCKET_DIR=/homeassistant/.spiffe
+readonly SOCKET="${SOCKET_DIR}/agent.sock"
+
+option() {
+  jq -r --arg name "$1" '.[$name] // "" | tostring' "${OPTIONS}"
+}
+
+issuer="$(option issuer)"
+trust_domain="$(option trust_domain)"
+client_id="$(option client_id)"
+ca_file="$(option ca_file)"
+
+missing=()
+[[ -n "${issuer}" ]] || missing+=(issuer)
+[[ -n "${trust_domain}" ]] || missing+=(trust_domain)
+[[ -n "${client_id}" ]] || missing+=(client_id)
+if ((${#missing[@]})); then
+  bashio::log.fatal "Set these options on the Configuration tab first: ${missing[*]}"
+  exit 1
+fi
+
+if [[ ! -e "${KEY}" ]]; then
+  # Refuses to overwrite an existing file and writes it with mode 0600.
+  spiffex key generate -out "${KEY}" >/dev/null
+  bashio::log.notice "Generated a new private key for this machine."
+fi
+
+bashio::log.info "Admit this public key at the issuer as client ${client_id}:"
+spiffex key public -in "${KEY}"
+
+# The agent does not create the socket's directory. Keep it private to root even if it existed.
+mkdir -p "${SOCKET_DIR}"
+chmod 0700 "${SOCKET_DIR}"
+
+args=(
+  agent
+  -issuer "${issuer}"
+  -trust-domain "${trust_domain}"
+  -client-id "${client_id}"
+  -key-file "${KEY}"
+  -socket "${SOCKET}"
+)
+if [[ -n "${ca_file}" ]]; then
+  args+=(-ca-file "${ca_file}")
+fi
+
+bashio::log.info "Serving the Workload API at ${SOCKET} (unix:///config/.spiffe/agent.sock in Home Assistant)"
+exec spiffex "${args[@]}"
