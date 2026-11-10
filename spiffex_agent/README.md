@@ -1,4 +1,4 @@
-# spiffex agent
+# Spiffex Agent
 
 A [SPIFFE](https://spiffe.io) identity for Home Assistant from a
 [spiffex](https://github.com/PeterSR/spiffex) issuer. Use it together with the

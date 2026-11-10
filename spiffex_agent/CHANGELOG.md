@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- A readable name in the app store, Spiffex Agent, and the SPIFFE logo as the app's icon and logo.
+  The image is unchanged apart from its version.
+
 ## 0.1.2
 
 - Ship spiffex's Apache-2.0 licence in the image, and label the image with both licences.

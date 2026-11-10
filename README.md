@@ -2,7 +2,7 @@
 
 A Home Assistant app (add-on) repository with one app:
 
-- **[spiffex agent](spiffex_agent/DOCS.md)**: gives Home Assistant a [SPIFFE](https://spiffe.io)
+- **[Spiffex Agent](spiffex_agent/DOCS.md)**: gives Home Assistant a [SPIFFE](https://spiffe.io)
   identity from a [spiffex](https://github.com/PeterSR/spiffex) issuer, by running the spiffex
   agent and serving the SPIFFE Workload API where Home Assistant Core can reach it.
 
@@ -15,7 +15,7 @@ Teleport or anything else only has to serve the Workload API at a path Core can 
 
 1. In Home Assistant, go to **Settings → Apps → App store**, open the menu, choose
    **Repositories**, and add `https://github.com/PeterSR/homeassistant-spiffex-addon`.
-2. Install **spiffex agent** and follow its documentation.
+2. Install **Spiffex Agent** and follow its documentation.
 
 ## Development
 
@@ -44,3 +44,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 [MIT](LICENSE). The app's image also contains the spiffex binary, which is licensed under the
 [Apache License 2.0](https://github.com/PeterSR/spiffex/blob/main/LICENSE); its licence is in the
 image at `/usr/share/licenses/spiffex/LICENSE`.
+
+The app's icon and logo are the SPIFFE logo, a trademark of The Linux Foundation, taken from the
+[CNCF artwork repository](https://github.com/cncf/artwork/tree/main/projects/spiffe) and used under
+the [Linux Foundation trademark guidelines](https://www.linuxfoundation.org/trademark-usage) to show
+compatibility with SPIFFE. This project is not affiliated with or endorsed by the SPIFFE project,
+the CNCF or The Linux Foundation.
