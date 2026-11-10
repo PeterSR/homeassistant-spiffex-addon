@@ -1,4 +1,4 @@
-# spiffex agent
+# Spiffex Agent
 
 This app gives Home Assistant a [SPIFFE](https://spiffe.io) identity from a
 [spiffex](https://github.com/PeterSR/spiffex) issuer. It runs the spiffex agent, which signs in to
