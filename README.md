@@ -20,7 +20,8 @@ Teleport or anything else only has to serve the Workload API at a path Core can 
 ## Development
 
 The app's image is built from `spiffex_agent/Dockerfile` for `amd64` and `arm64` and published to
-`ghcr.io/petersr/homeassistant-spiffex-agent` by the *Build* workflow when a `v*` tag is pushed.
+`ghcr.io/petersr/homeassistant-spiffex-agent` by the *Build* workflow when the version in
+`spiffex_agent/config.yaml` changes on `main` (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 To try it locally against a throwaway trust domain:
 
 ```bash

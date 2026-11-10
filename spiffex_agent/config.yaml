@@ -10,7 +10,6 @@ image: ghcr.io/petersr/homeassistant-spiffex-agent
 init: false
 # Start before Home Assistant Core, so the Workload API is there when Core sets up.
 startup: services
-boot: auto
 map:
   - type: homeassistant_config
     read_only: false
@@ -22,7 +21,7 @@ options:
   trust_domain: ""
   client_id: ""
 schema:
-  issuer: str
+  issuer: url
   trust_domain: str
   client_id: str
   ca_file: str?

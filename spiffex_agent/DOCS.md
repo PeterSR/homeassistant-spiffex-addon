@@ -40,7 +40,8 @@ too. The integration works with any SPIFFE implementation; this app is the spiff
 4. **Add the SPIFFE integration** with the address `unix:///config/.spiffe/agent.sock`.
 
 Until the key is admitted, the agent serves the trust bundle but cannot get tokens. The
-integration raises a repair issue saying so.
+integration sets up fine, and raises a repair issue the first time an integration asks for a token
+and is refused.
 
 ## Options
 
@@ -58,6 +59,12 @@ integration raises a repair issue saying so.
   by root only.
 - **The private key** is `key.pem` in the app's own data folder. It is created once and reused,
   and it is left out of backups.
+
+## If the agent stops
+
+When the agent exits with an error, for example because an option is wrong, the app stops and its
+log says why. Turn on the app's *Watchdog* to have Home Assistant restart it automatically after a
+crash.
 
 ## Backups and restoring
 

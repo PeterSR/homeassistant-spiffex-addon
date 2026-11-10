@@ -24,8 +24,14 @@ spiffex agent.
 
 ## Releases
 
-Push a tag `vX.Y.Z` matching `version` in `config.yaml`. The *Build* workflow publishes the image
-for both architectures, and Home Assistant offers the update.
+Bump `version` in `config.yaml` and push to `main`. The *Build* workflow publishes
+`ghcr.io/petersr/homeassistant-spiffex-agent:<version>` for both architectures, unless an image
+with that version already exists, and then tags the commit `v<version>`. Home Assistant reads the
+version from `main` straight away, so for the few minutes the build takes, an update to it fails
+until the image is there.
+
+The first time an image is published, make the package public under the repository's *Packages*
+settings, or Home Assistant cannot pull it.
 
 By contributing, you agree that your contribution is licensed under the [MIT License](LICENSE),
 and you agree to follow the [code of conduct](CODE_OF_CONDUCT.md).
