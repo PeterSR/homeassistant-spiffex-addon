@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Write the private key atomically, so a power cut on first start cannot leave a half-written key.
+- If the key cannot be read, set it aside, create a new one, and say so in the log.
+- Show the app's own message when a required option is empty.
+
 ## 0.1.0
 
 - First version: runs spiffex agent 0.4.1, creates this machine's key on first start, and serves

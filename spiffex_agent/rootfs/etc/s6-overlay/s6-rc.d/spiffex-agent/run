@@ -29,10 +29,27 @@ if ((${#missing[@]})); then
   exit 1
 fi
 
+new_key() {
+  # Write to a temporary name and rename, so a power cut never leaves a half-written key.pem.
+  # `key generate` refuses to overwrite a file and writes it with mode 0600.
+  rm -f "${KEY}.new"
+  spiffex key generate -out "${KEY}.new" >/dev/null
+  sync "${KEY}.new"
+  mv "${KEY}.new" "${KEY}"
+  sync /data
+}
+
 if [[ ! -e "${KEY}" ]]; then
-  # Refuses to overwrite an existing file and writes it with mode 0600.
-  spiffex key generate -out "${KEY}" >/dev/null
+  new_key
   bashio::log.notice "Generated a new private key for this machine."
+elif ! spiffex key public -in "${KEY}" >/dev/null 2>&1; then
+  # An unreadable key cannot sign in anywhere, so nothing is lost by replacing it. Keep the old
+  # file for inspection.
+  corrupt="${KEY}.unreadable-$(date +%Y%m%dT%H%M%S)"
+  mv "${KEY}" "${corrupt}"
+  new_key
+  bashio::log.warning "The private key could not be read and was moved to ${corrupt}."
+  bashio::log.warning "Generated a new one: admit it at the issuer in place of the old key."
 fi
 
 bashio::log.info "Admit this public key at the issuer as client ${client_id}:"

@@ -58,7 +58,8 @@ and is refused.
   folder, which Core sees as `/config/.spiffe/agent.sock`. The folder and the socket are readable
   by root only.
 - **The private key** is `key.pem` in the app's own data folder. It is created once and reused,
-  and it is left out of backups.
+  and it is left out of backups. If it ever cannot be read, the app sets it aside, creates a new
+  one and says so in its log; admit the new key in place of the old one.
 
 ## If the agent stops
 

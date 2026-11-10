@@ -1,5 +1,5 @@
 name: spiffex agent
-version: "0.1.0"
+version: "0.1.1"
 slug: spiffex_agent
 description: A SPIFFE identity for Home Assistant, from a spiffex issuer
 url: https://github.com/PeterSR/homeassistant-spiffex-addon
@@ -15,13 +15,13 @@ map:
     read_only: false
 # The private key stays on this machine: a restored backup gets a new key, which you admit again.
 backup_exclude:
-  - "*/key.pem"
+  - "*/key.pem*"
 options:
   issuer: ""
   trust_domain: ""
   client_id: ""
 schema:
-  issuer: url
+  issuer: str
   trust_domain: str
   client_id: str
   ca_file: str?

@@ -14,7 +14,23 @@ env:
 
 jobs:
   build:
+    # Pull requests only build, with read-only permissions.
     name: Build image
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: spiffex_agent
+          platforms: linux/amd64,linux/arm64
+          push: false
+
+  publish:
+    name: Publish image
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write # to tag the release commit
@@ -28,29 +44,29 @@ jobs:
 
       - uses: docker/setup-qemu-action@v4
       - uses: docker/setup-buildx-action@v4
-
-      - name: Log in to ghcr.io
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v4
+      - uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Publish only from main, and never overwrite an image that was already published: users who
-      # installed that version must keep getting exactly that image.
+      # Never overwrite a published image: users who installed that version must keep getting
+      # exactly that image. Publish only on a definite "not found"; any other error fails the job.
       - name: Decide whether to publish
         id: publish
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          publish=false
-          if [[ "${GITHUB_EVENT_NAME}" == push && "${GITHUB_REF}" == refs/heads/main ]]; then
-            if docker buildx imagetools inspect "${IMAGE}:${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
-              echo "${IMAGE}:${{ steps.version.outputs.version }} already exists; not publishing"
-            else
-              publish=true
-            fi
+          if out="$(docker buildx imagetools inspect "${IMAGE}:${VERSION}" 2>&1)"; then
+            echo "${IMAGE}:${VERSION} already exists; not publishing"
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          elif grep -qiE "not found|manifest unknown" <<<"${out}"; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Could not tell whether ${IMAGE}:${VERSION} exists:" >&2
+            echo "${out}" >&2
+            exit 1
           fi
-          echo "publish=${publish}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/build-push-action@v7
         with:
@@ -64,7 +80,8 @@ jobs:
 
       - name: Tag the release
         if: steps.publish.outputs.publish == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          tag="v${{ steps.version.outputs.version }}"
-          git tag "${tag}"
-          git push origin "${tag}"
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
