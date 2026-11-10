@@ -89,6 +89,7 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
+          set -o pipefail
           if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null; then
             echo "v${VERSION} is already tagged"
             exit 0
