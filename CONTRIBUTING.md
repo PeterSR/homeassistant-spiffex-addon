@@ -16,6 +16,8 @@ spiffex agent.
 ## Changes
 
 - Run `shellcheck` on the scripts in `spiffex_agent/rootfs/etc/s6-overlay/s6-rc.d/spiffex-agent/`.
+- Dependabot cannot see the base image, which is set through `ARG BUILD_FROM`: bump it by hand
+  from [home-assistant/docker-base](https://github.com/home-assistant/docker-base/releases).
 - To move to a new spiffex release, change `SPIFFEX_VERSION` and both `SPIFFEX_SHA256_*` values in
   the Dockerfile together, from the release's `checksums.txt`.
 - For any change a user would notice, bump `version` in `spiffex_agent/config.yaml` and add an

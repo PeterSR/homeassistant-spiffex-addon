@@ -60,7 +60,7 @@ jobs:
           if out="$(docker buildx imagetools inspect "${IMAGE}:${VERSION}" 2>&1)"; then
             echo "${IMAGE}:${VERSION} already exists; not publishing"
             echo "publish=false" >> "$GITHUB_OUTPUT"
-          elif grep -qiE "not found|manifest unknown" <<<"${out}"; then
+          elif grep -qiE "not found|manifest unknown|name unknown" <<<"${out}"; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
           else
             echo "Could not tell whether ${IMAGE}:${VERSION} exists:" >&2
@@ -78,10 +78,15 @@ jobs:
             io.hass.version=${{ steps.version.outputs.version }}
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
 
+      # Also run when the image already exists, so a tag push that failed after a publish is
+      # retried on the next run.
       - name: Tag the release
-        if: steps.publish.outputs.publish == 'true'
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          git tag "v${VERSION}"
-          git push origin "v${VERSION}"
+          if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null; then
+            echo "v${VERSION} is already tagged"
+          else
+            git tag "v${VERSION}"
+            git push origin "v${VERSION}"
+          fi
