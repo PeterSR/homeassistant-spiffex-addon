@@ -40,7 +40,9 @@ jobs:
 
       - name: Read the app version
         id: version
-        run: echo "version=$(yq -r '.version' spiffex_agent/config.yaml)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "version=$(yq -r '.version' spiffex_agent/config.yaml)" >> "$GITHUB_OUTPUT"
+          echo "created=$(git log -1 --format=%cI)" >> "$GITHUB_OUTPUT"
 
       - uses: docker/setup-qemu-action@v4
       - uses: docker/setup-buildx-action@v4
@@ -77,16 +79,26 @@ jobs:
           labels: |
             io.hass.version=${{ steps.version.outputs.version }}
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ steps.version.outputs.created }}
 
       # Also run when the image already exists, so a tag push that failed after a publish is
-      # retried on the next run.
+      # retried on the next run. The tag goes on the commit the image was built from, read from
+      # its revision label, not on whatever main is now.
       - name: Tag the release
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           if git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null; then
             echo "v${VERSION} is already tagged"
-          else
-            git tag "v${VERSION}"
-            git push origin "v${VERSION}"
+            exit 0
           fi
+          revision="$(docker buildx imagetools inspect "${IMAGE}:${VERSION}" --format '{{ json .Image }}' \
+            | jq -r '."linux/amd64".config.Labels."org.opencontainers.image.revision" // empty')"
+          if [[ -z "${revision}" ]]; then
+            echo "${IMAGE}:${VERSION} has no revision label; not guessing which commit to tag" >&2
+            exit 1
+          fi
+          git fetch --quiet origin "${revision}"
+          git tag "v${VERSION}" "${revision}"
+          git push origin "v${VERSION}"

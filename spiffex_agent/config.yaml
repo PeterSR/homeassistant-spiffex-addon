@@ -1,5 +1,5 @@
 name: spiffex agent
-version: "0.1.1"
+version: "0.1.2"
 slug: spiffex_agent
 description: A SPIFFE identity for Home Assistant, from a spiffex issuer
 url: https://github.com/PeterSR/homeassistant-spiffex-addon

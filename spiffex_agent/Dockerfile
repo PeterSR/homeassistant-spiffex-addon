@@ -19,6 +19,8 @@ RUN set -eu; \
       "https://github.com/PeterSR/spiffex/releases/download/v${SPIFFEX_VERSION}/${archive}"; \
     echo "${sha}  /tmp/${archive}" | sha256sum -c -; \
     tar -xzf "/tmp/${archive}" -C /usr/local/bin spiffex; \
+    mkdir -p /usr/share/licenses/spiffex; \
+    tar -xzf "/tmp/${archive}" -C /usr/share/licenses/spiffex LICENSE; \
     rm "/tmp/${archive}"; \
     spiffex version
 
@@ -30,4 +32,4 @@ LABEL \
   org.opencontainers.image.title="spiffex agent" \
   org.opencontainers.image.description="A SPIFFE identity for Home Assistant, from a spiffex issuer" \
   org.opencontainers.image.source="https://github.com/PeterSR/homeassistant-spiffex-addon" \
-  org.opencontainers.image.licenses="MIT"
+  org.opencontainers.image.licenses="MIT AND Apache-2.0"

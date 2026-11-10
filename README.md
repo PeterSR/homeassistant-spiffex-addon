@@ -41,4 +41,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). The app's image also contains the spiffex binary, which is licensed under the
+[Apache License 2.0](https://github.com/PeterSR/spiffex/blob/main/LICENSE); its licence is in the
+image at `/usr/share/licenses/spiffex/LICENSE`.

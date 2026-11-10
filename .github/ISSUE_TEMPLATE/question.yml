@@ -1,0 +1,13 @@
+name: Question or idea
+description: Ask how something works, or suggest a change.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Never paste a private key or a token.
+  - type: textarea
+    id: what
+    attributes:
+      label: Your question or idea
+    validations:
+      required: true

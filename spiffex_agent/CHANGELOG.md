@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Ship spiffex's Apache-2.0 licence in the image, and label the image with both licences.
+- Label the image with the commit it was built from.
+
 ## 0.1.1
 
 - Write the private key atomically, so a power cut on first start cannot leave a half-written key.
